@@ -59,7 +59,7 @@ def create_vectorstore(text):
     docs = splitter.create_documents([text])
 
     embedding = GoogleGenerativeAIEmbeddings(
-        model="embedding-001",
+        model="text-embedding-001",
         google_api_key=GOOGLE_API_KEY
     )
 
