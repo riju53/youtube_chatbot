@@ -6,3 +6,4 @@ python-dotenv==1.2.2
 sentence-transformers==5.4.1
 streamlit==1.57.0
 youtube-transcript-api==1.2.4
+torchvision @ https://download.pytorch.org/whl/cpu/torchvision-0.25.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl
