@@ -1,4 +1,3 @@
-
 import streamlit as st
 import re
 import os
@@ -15,13 +14,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # -----------------------------
-# 🔐 API KEY
+# 🔐 API KEYS
 # -----------------------------
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+HF_API_KEY = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 if not GOOGLE_API_KEY:
-    st.error("❌ GOOGLE_API_KEY not found. Set it in environment variables.")
+    st.error("❌ GOOGLE_API_KEY not found.")
     st.stop()
+
+# ✅ Set HuggingFace token globally
+if HF_API_KEY:
+    os.environ["HUGGINGFACEHUB_API_TOKEN"] = HF_API_KEY
+else:
+    st.warning("⚠️ HuggingFace token not found (optional).")
 
 # -----------------------------
 # 🤖 LLM
@@ -58,7 +64,9 @@ def create_vectorstore(text):
     docs = splitter.create_documents([text])
 
     embedding = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        model_kwargs={"device": "cpu"},
+        encode_kwargs={"normalize_embeddings": True}
     )
 
     return FAISS.from_documents(docs, embedding)
@@ -104,7 +112,6 @@ def get_answer(query, vectorstore):
 st.set_page_config(page_title="YouTube RAG Chat", layout="wide")
 st.title("📺 YouTube Transcript Chatbot (RAG)")
 
-# Session state
 if "vectorstore" not in st.session_state:
     st.session_state.vectorstore = None
 
