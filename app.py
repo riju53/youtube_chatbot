@@ -74,7 +74,7 @@ embedding = GoogleGenerativeAIEmbeddings(
     google_api_key=GOOGLE_API_KEY
 )
 
-    return FAISS.from_documents(docs, embedding)
+return FAISS.from_documents(docs, embedding)
 
 # -----------------------------
 # 💬 RAG Answer
