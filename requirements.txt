@@ -1,0 +1,8 @@
+faiss-cpu==1.13.2
+langchain==1.2.15
+langchain-community==0.4.1
+langchain-google-genai==4.2.2
+python-dotenv==1.2.2
+sentence-transformers==5.4.1
+streamlit==1.57.0
+youtube-transcript-api==1.2.4
