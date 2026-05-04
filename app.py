@@ -4,30 +4,25 @@ import os
 
 from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_genai import (
+    ChatGoogleGenerativeAI,
+    GoogleGenerativeAIEmbeddings
+)
 from langchain_core.prompts import PromptTemplate
 
-# OPTIONAL (for local .env support)
+# OPTIONAL (for local .env)
 from dotenv import load_dotenv
 load_dotenv()
 
 # -----------------------------
-# 🔐 API KEYS
+# 🔐 API KEY
 # -----------------------------
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-HF_API_KEY = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
 if not GOOGLE_API_KEY:
-    st.error("❌ GOOGLE_API_KEY not found.")
+    st.error("❌ GOOGLE_API_KEY not found. Set it in environment variables.")
     st.stop()
-
-# ✅ Set HuggingFace token globally
-if HF_API_KEY:
-    os.environ["HUGGINGFACEHUB_API_TOKEN"] = HF_API_KEY
-else:
-    st.warning("⚠️ HuggingFace token not found (optional).")
 
 # -----------------------------
 # 🤖 LLM
@@ -63,18 +58,12 @@ def create_vectorstore(text):
     )
     docs = splitter.create_documents([text])
 
-    #embedding = HuggingFaceEmbeddings(
-       # model_name="sentence-transformers/all-MiniLM-L6-v2",
-        #model_kwargs={"device": "cpu"},
-        #encode_kwargs={"normalize_embeddings": True}
-    #)
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
-embedding = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001",
-    google_api_key=GOOGLE_API_KEY
-)
+    embedding = GoogleGenerativeAIEmbeddings(
+        model="models/embedding-001",
+        google_api_key=GOOGLE_API_KEY
+    )
 
-return FAISS.from_documents(docs, embedding)
+    return FAISS.from_documents(docs, embedding)
 
 # -----------------------------
 # 💬 RAG Answer
@@ -117,6 +106,7 @@ def get_answer(query, vectorstore):
 st.set_page_config(page_title="YouTube RAG Chat", layout="wide")
 st.title("📺 YouTube Transcript Chatbot (RAG)")
 
+# Session state
 if "vectorstore" not in st.session_state:
     st.session_state.vectorstore = None
 
